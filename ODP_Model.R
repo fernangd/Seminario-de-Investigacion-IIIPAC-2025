@@ -8,10 +8,10 @@ rm(list = ls())      # despejar el espacio de trabajo"
 #
 # datas
 #
-insurer.data="C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/comauto_pos.csv"
-#insurer.data="C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/ppauto_pos.csv"
-#insurer.data="C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/wkcomp_pos.csv"
-#insurer.data="C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/prodliab_pos.csv"
+insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/comauto_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/ppauto_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/wkcomp_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/prodliab_pos.csv"
 grpcode="353"
 losstype <- "cpdloss"
 a <- read.csv(insurer.data)
