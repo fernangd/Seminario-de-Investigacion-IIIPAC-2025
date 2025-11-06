@@ -1,13 +1,8 @@
 library(readr)
 
-# Datas de las aseguradoras
-ca_data <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/CA-Mack_Incurrida.csv")
-pa_data <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/PA-Mack_Incurrida.csv")
-wc_data <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/WC-Mack_Incurrida.csv")
-ol_data <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/OL-Mack_Incurrida.csv")
+# Data de las aseguradoras
 
-# Combinar todos los datos
-combined_data <- rbind(ca_data, pa_data, wc_data, ol_data)
+Mack_Incurrida <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/Mack_Incurrida_gráficos.csv")
 
 # ========== CONFIGURAR LAYOUT DE 3 FILAS X 2 COLUMNAS ==========
 windows(width = 12, height = 14)  # En Windows
@@ -23,7 +18,7 @@ c_alpha <- 1.36
 # ========== FILA 1: CA Y PA ==========
 
 # CA - ODP Incurridas
-predicted_percentiles <- ca_data$OutcomePercentile
+predicted_percentiles <- Mack_Incurrida[1:50,]$OutcomePercentile
 n <- length(predicted_percentiles)
 predicted_sorted <- sort(predicted_percentiles/100)
 expected_ecdf <- (1:n) / n
@@ -52,7 +47,7 @@ grid(col = "gray80", lty = 3)
 box()
 
 # PA - ODP Incurridas
-predicted_percentiles <- pa_data$OutcomePercentile
+predicted_percentiles <- Mack_Incurrida[51:100,]$OutcomePercentile
 n <- length(predicted_percentiles)
 predicted_sorted <- sort(predicted_percentiles/100)
 expected_ecdf <- (1:n) / n
@@ -83,7 +78,7 @@ box()
 # ========== FILA 2: WC Y OL ==========
 
 # WC - ODP Incurridas
-predicted_percentiles <- wc_data$OutcomePercentile
+predicted_percentiles <- Mack_Incurrida[101:150,]$OutcomePercentile
 n <- length(predicted_percentiles)
 predicted_sorted <- sort(predicted_percentiles/100)
 expected_ecdf <- (1:n) / n
@@ -112,7 +107,7 @@ grid(col = "gray80", lty = 3)
 box()
 
 # OL - ODP Incurridas
-predicted_percentiles <- ol_data$OutcomePercentile
+predicted_percentiles <- Mack_Incurrida[151:200,]$OutcomePercentile
 n <- length(predicted_percentiles)
 predicted_sorted <- sort(predicted_percentiles/100)
 expected_ecdf <- (1:n) / n
@@ -143,7 +138,7 @@ box()
 # ========== FILA 3: HISTOGRAMA Y GRÁFICO P-P COMBINADO ==========
 
 # Histograma CA+PA+WC+OL
-predicted_percentiles <- combined_data$OutcomePercentile
+predicted_percentiles <- Mack_Incurrida$OutcomePercentile
 
 # Ajustar breaks para incluir todos los valores
 breaks_seq <- seq(0, 100, by = 10)
@@ -197,9 +192,9 @@ par(mfrow = c(1, 1))
 # ========== INTERPRETACIÓN FINAL ==========
 cat("=== INTERPRETACIÓN COMPLETA ===\n")
 cat("Grupos individuales:\n")
-cat("  CA: n =", nrow(ca_data), "\n")
-cat("  PA: n =", nrow(pa_data), "\n")
-cat("  WC: n =", nrow(wc_data), "\n")
-cat("  OL: n =", nrow(ol_data), "\n")
-cat("Combinado: n =", nrow(combined_data), "\n")
+cat("  CA: n =", nrow(Mack_Incurrida[1:50,]), "\n")
+cat("  PA: n =", nrow(Mack_Incurrida[51:100,]), "\n")
+cat("  WC: n =", nrow(Mack_Incurrida[101:150,]), "\n")
+cat("  OL: n =", nrow(Mack_Incurrida[151:200,]), "\n")
+cat("Combinado: n =", nrow(Mack_Incurrida), "\n")
 
