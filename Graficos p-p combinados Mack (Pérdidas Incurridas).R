@@ -1,6 +1,6 @@
 library(readr)
 
-# Data de las aseguradoras
+# Data de aseguradoras (CA, PA, WC, OL)
 
 Mack_Incurrida <- read_csv("C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas para los triangulos p-p/MACK/Pérdidas Incurridas/Mack_Incurrida_gráficos.csv")
 
