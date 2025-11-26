@@ -1,18 +1,20 @@
 #
-# Script to run the CSR Model on data from the CAS Loss Reserve Database
-# by Glenn Meyers - VERSIÓN CORREGIDA
+# Script para ejecutar el modelo CSR con datos de la base de datos de reserva de pérdidas CAS
 #
-rm(list = ls())      # clear workspace"
+rm(list = ls())   
 #
-# user inputs
+# Datas de las aseguradoras
 #
-insurer.data="C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/comauto_pos.csv"
-grpcode="353"
-losstype="cpdloss"  #"incloss" if incurred loss or "cpdloss" if paid loss
-outfile="outCSR.csv"
+insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/comauto_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/ppauto_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/wkcomp_pos.csv"
+#insurer.data <- "C:/Users/VINROL/Desktop/Clases III PAC 2025/Seminario de Investigación/Datas de automóviles/prodliab_pos.csv"
+
+grpcode <- "353"
+losstype <- "cpdloss"  #"incloss" si hay pérdida incurrida o "cpdloss" si hay pérdida pagada
+outfile <- "outCSR.csv"
 
 #
-# JAGS script (EXACTO al segundo código)
 #
 csr_model <- "
 model {
@@ -53,8 +55,8 @@ model {
 a <- read.csv(insurer.data)
 
 #
-# function to get Schedule P triangle data given ins group and line of business
-# (EXACTA al segundo código)
+# 
+Función para obtener los datos del triángulo del Anexo P dados el grupo y la línea de negocio
 #
 ins.line.data <- function(g.code) {
   b <- subset(a, a$GRCODE == g.code)
@@ -75,7 +77,7 @@ ins.line.data <- function(g.code) {
   single <- b[,12]
   posted_reserve97 <- b[,13]
   
-  # get incremental paid losses
+  # obtener pérdidas pagadas incrementales
   inc_pdloss <- numeric(0)
   for (i in unique(w)) {
     s <- (w == i)
@@ -94,17 +96,16 @@ ins.line.data <- function(g.code) {
 }
 
 #
-# read and aggregate the insurer data and 
-# set up training and test data frames
-# (EXACTO al segundo código)
+# Leer y agregar los datos de la aseguradora y 
+# configurar marcos de datos de entrenamiento y prueba
 #
 cdata <- ins.line.data(grpcode)
 
-# Preparar datos (EXACTO al segundo código)
+# Preparar datos
 w <- cdata$w - 1987
 d <- cdata$d
 
-# Ordenar los datos (EXACTO al segundo código)
+# Ordenar los datos
 o1 <- 100 * d + w
 o <- order(o1)
 w <- w[o]
@@ -132,7 +133,6 @@ if(losstype == "incloss") {
   aloss <- adata$cpdloss
 }
 
-# Preparar datos para JAGS (EXACTO al segundo código)
 if(length(premium) >= 10) {
   premium_data <- premium[1:10]
 } else {
@@ -148,7 +148,7 @@ jags_data <- list(
 )
 
 #
-# run the model (EXACTO al segundo código)
+# ejecutar el modelo
 #
 library(runjags)
 library(coda)
@@ -156,7 +156,7 @@ library(coda)
 # Parámetros a monitorear
 params <- c("alpha", "beta", "sigd2", "gamma")
 
-# Configuración EXACTA del segundo código
+
 inits1 <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = 12341)
 inits2 <- list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = 12342)
 
@@ -181,21 +181,21 @@ tryCatch({
 
 print(csr_result$timetaken)
 
-# Extraer muestras posteriores (EXACTO al segundo código)
+# Extraer muestras posteriores
 samples <- as.matrix(as.mcmc.list(csr_result))
 
-# Procesar resultados (EXACTO al segundo código)
+# Procesar resultados
 alpha <- samples[, 1:10]
 beta <- cbind(samples[, 11:19], rep(0, nrow(samples)))
 gamma <- samples[, 20]
 sigd2 <- samples[, 21:30]
 
-# Simular pérdidas finales (EXACTO al segundo código)
+# Simular pérdidas finales 
 set.seed(12345)
 n_sim <- nrow(samples)
 at.wd10 <- matrix(0, n_sim, 10)
 
-# Inicializar con valores conocidos (EXACTO al segundo código)
+# Inicializar con valores conocidos 
 for (w in 1:10) {
   max_dev_for_w <- max(rdata$d[rdata$w == w])
   last_known_index <- which(rdata$w == w & rdata$d == max_dev_for_w)[1]
@@ -207,7 +207,7 @@ for (w in 1:10) {
   }
 }
 
-# Proyectar hacia el desarrollo 10 (EXACTO al segundo código)
+# Proyectar hacia el desarrollo 10 
 for (w in 1:10) {
   for (i in 1:n_sim) {
     if(is.finite(alpha[i, w]) && is.finite(beta[i, 10]) && is.finite(gamma[i])) {
@@ -222,12 +222,12 @@ for (w in 1:10) {
   }
 }
 
-# Calcular estadísticas (EXACTO al segundo código)
+# Calcular estadísticas 
 Pred.CSR <- rowSums(at.wd10)
 CSR.total.ult <- round(mean(Pred.CSR))
 CSR.total.se <- round(sd(Pred.CSR))
 
-# Obtener pérdidas actuales (EXACTO al segundo código)
+# Obtener pérdidas actuales 
 actual_final <- numeric(10)
 for(w in 1:10) {
   max_dev_w <- max(adata$d[adata$w == w])
@@ -240,10 +240,10 @@ for(w in 1:10) {
 }
 acttot <- sum(actual_final)
 
-# Calcular percentil (EXACTO al segundo código)
+# Calcular percentil
 pct.CSR <- round(mean(Pred.CSR <= acttot) * 100, 2)
 
-# Retornar resultados (EXACTO al segundo código)
+# Retornar resultados 
 results <- data.frame(
   Line = "CA",
   GroupCode = grpcode,
@@ -257,7 +257,7 @@ results <- data.frame(
 cat("\n=== RESULTADO CSR CORREGIDO ===\n")
 print(results)
 
-# CALCULAR TABLA RISK (como en el código original)
+# CALCULAR TABLA RISK
 ms.wd10 <- apply(at.wd10, 2, mean)
 ss.wd10 <- apply(at.wd10, 2, sd)
 Pred.CSR <- rowSums(at.wd10)
